@@ -1,0 +1,157 @@
+Some terminology used by the PostScript driver code:
+
+  Device font: A font natively supported by the printer (via hardware ROM).
+
+  Dynamic font: A font which has been downloaded to the printer (to either
+                its memory or its hard disk, if it has one) via the Font
+                Manager page of the print driver properties notebook.  (This
+                feature does not seem to work with all printers.)
+
+  PAK or driver font: A font which is provided with the OS/2 PostScript
+                      driver in an external PAK file.  (This feature appears
+                      not to be used by current versions of the driver, 
+                      although the support is still there.)
+
+  Soft font: A font which is downloaded to the printer on demand by embedding
+             it into the PostScript print job/file.
+
+The term "downloaded font" is ambiguous, as it can refer to either dynamic or
+soft fonts.  (When used on the printer settings dialog, it apparently refers
+to dynamic fonts.)
+
+
+OVERVIEW OF FONT DOWNLOAD LOGIC 
+
+When the device context created for PostScript output is initialized (in the
+function prde_FillPdb in devblock.c), the following happens with regards to 
+fonts: 
+
+ - The list of all installed fonts is read from PM_Fonts in OS2.INI, and
+   used to populate a global array of FNT structures (by calling SFQueryFonts 
+   in download.c).  This step is skipped if the array already exists and the 
+   number of fonts therein has not changed.
+
+   For each filename retrieved from PM_Fonts, it is checked for a valid 
+   extension (originally .OFM only; I have added .TTF and .TTC as well); then,
+   the actual font file is parsed (as an OFM or TTF/TTC font, depending on 
+   the extension) and the following entries in the FNT structure are populated:
+     PSZ pszFullName - the actual name of the font as seen by the application
+     PSZ pszFontName - the PostScript name of the font to send to the printer
+     PSZ pszOFM      - the name of the OS/2 .OFM (or .TTF) font file on disk 
+     PSZ pszPFB      - the name of the OS/2 .PFB (or .TTF) font file on disk 
+   It is worth noting that the above strings are allocated as a single buffer
+   containing all four strings separated by nulls; the pointers are simply
+   offsets into this buffer.  (Dealing with this fact occasionally results in
+   some rather odd-looking code.)
+
+   For TrueType fonts, pszOFM and pszPFB are the same.  For Type 1 fonts, they
+   point to the OS/2 binary metrics file, and the font data file, respectively.
+   Which type of font a given FNT object refers to can be determined later on 
+   by using the IsOFMFile and IsTTFFile functions.
+
+   The field
+     SHORT usResource
+   is also set at this time; it will be 0 for a soft font, and -1 for a device
+   font.  (It is a signed short in spite of the prefix; this oddity is IBM's
+   doing, not mine.)
+
+ - The cFonts field in the device data is set as:
+      number of fonts in the global font array (i.e. supported system fonts)
+    + number of dynamic (downloaded) fonts (if any)
+    + number of device (hardware) fonts (if "use device fonts" is enabled)
+
+   A second array of FNT structures is allocated with this number of entries.
+   So we now have two FNT arrays: one representing global system fonts, and one
+   representing all fonts available to this particular printer.
+
+ - Some sort of extra logic is performed around this point to deal with a few
+   predefined Japanese fonts.
+
+ - This next bit is rather confusing, but (if I've read the source code
+   correctly) the following is what apparently happens:
+
+   The list of hardware fonts supported by the printer is compared against the
+   optional font PAK files that may be included with the PSCRIPT driver.  If 
+   the hardware font is found in the PAK file it is added to the printer font
+   array.  
+
+   (I'm really not sure what the purpose of this step is -- surely this would 
+   cause these fonts to appear twice in the printer font array? -- but it's 
+   more or less moot as there are no PAK files provided with modern versions
+   of the PSCRIPT driver in any case.)
+
+ - The "dynamic fonts" (fonts which have been downloaded to the printer via the
+   Font Manager page of the driver settings notebook) are also added to the
+   printer fonts array.
+
+ - The fonts in the global font array are copied into the device fonts array, 
+   up to the maximum number of remaining spots (via FillSFonts in download.c).
+   For TrueType fonts, some conditionals were added: if the font file is larger
+   than a set maximum (either 2 MiB, or half the per-job free virtual memory 
+   reported by the PPD, whichever is less), OR if the printer does not support 
+   TrueType fonts (as reported by the PPD), it will be skipped.
+
+   Also, any font which has the same name as a hardware font supported by the
+   printer (as reported in the printer's PPD), it will be flagged as such by
+   setting the usResource field to -1.  (For soft fonts this is normally 0.)
+
+
+MODIFIED FUNCTIONS
+
+[download.c]function SFReadOFMs:
+ -- add a conditional for when filename ends in ".TTF".
+ -- call new function "FillTTFont" to popupate the FNT structure
+    in this case.
+
+[download.c]function IsTTFFile:  (NEW)
+ -- determine if a given font file has the extension TTF or TTC.
+ 
+[download.c]function FillTTFont:  (NEW)
+ -- parse the font names out of the TTF file, and set the corresponding 
+    fields in the FNT structure.  (Not sure if FNTLIB functions can be
+    used for the parsing or not; haven't looked into that yet.)
+ -- set both the pszOFM and pszPFB fields to the name of the TTF file.
+
+[download.c]function GetTTFNames: (NEW)
+ -- called by FillTTFont to parse the font names out of the TTF file.
+
+[charstr2.c] function prda_LoadFontResource: 
+ -- adds call to ConvertTTFtoPFM is the font file is a TTF.
+
+[download.c]function ConvertTTFtoPFM:  (NEW)
+ -- populates PS-compatible font metrics data by reading it from the TTF
+    (using TTFPopulatePFA and other existing FNTLIB functions).
+ 
+[download.c]function SFDownload:
+ -- if the pszPFB filename ends in .PFB, call SendPFB 
+ -- if the pszPFB filename ends in .TTF, call FNTLIB functions to generate
+    the PS data from the TTF file (this is copied to a temporary file in 
+    %TMP%) and then call new SendPFA function. 
+
+[download.c]function SendPFA:  (NEW)
+ -- writes the generated Type42 PFA to the output channel (the generated
+    temporary file is then deleted).  'PFA' refers to the format of the
+    PostScript data that is generated from the TTF.
+
+[fntlib\font.c]function GetFontTypeface:
+ -- added check if file is TTF
+// (WHAT IS THIS NEEDED FOR??)
+ 
+[fntlib\ttfps.c]function TTFPopulatePFA:  (NEW)
+ -- modified version of writePFA which populates a number of metrics
+    structures from a TTF.
+
+
+Remaining TODOs:
+ - Add support for .OTF fonts (download a CFF FontSet definition; this will
+   presumably require new routines for dealing with CFF data, and may require
+   encoding the CFF data as Ascii85 with GenPLib) - requires a PostScript
+   level 3 interpreter (as reported by PPD).
+ - Possibly try and add some built-in aliasing for "Times Roman" to
+   "Times New Roman", and "Helvetica Oblique" to "Helvetica Italic"...
+   this would help keep the job size down when device fonts are enabled.
+ - Test with DBCS.
+ - Try and get CUPS & Foomatic PPDs to work properly (without needing CleanPPD).
+ - Fix the odd line length problems.
+ - Implement subsetting for TTF/OTF?
+ - Kerning table support?

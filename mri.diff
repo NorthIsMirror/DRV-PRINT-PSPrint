@@ -1,0 +1,962 @@
+diff -burP mri\en\osdd\pscript\post32/config.dlg mri\en\osdd\pscript\psprint/config.dlg
+--- mri\en\osdd\pscript\post32/config.dlg	Tue May 21 16:37:38 2002
++++ mri\en\osdd\pscript\psprint/config.dlg	Tue Jan 20 11:11:36 2015
+@@ -67,21 +67,21 @@
+ DLGTEMPLATE DLG_PSPRINTERPROP LOADONCALL MOVEABLE DISCARDABLE
+ BEGIN
+     DIALOG  "", DLG_PSPRINTERPROP, 15, 7, 375, 228,
+-            FS_NOBYTEALIGN | WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR | FCF_BORDER
++            FS_NOBYTEALIGN | WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR | FCF_DLGBORDER
+             PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+     BEGIN
+-        CONTROL         "", PS_NOTEBOOK_GROUP, 7, 46, 350, 182, WC_NOTEBOOK,
++        CONTROL         "", PS_NOTEBOOK_GROUP, 3, 46, 369, 182, WC_NOTEBOOK,
+                         BKS_BACKPAGESTR | BKS_MAJORTABTOP | BKS_TABBEDDIALOG |
+                         BKS_ROUNDEDTABS | BKS_TABTEXTCENTER |
+                         BKS_STATUSTEXTCENTER | BKS_SPIRALBIND |
+                         WS_VISIBLE | WS_GROUP | WS_TABSTOP
+-        DEFPUSHBUTTON   "~Save", PSB_OK, 7, 26, 53, 14, WS_GROUP | BS_AUTOSIZE
+-        PUSHBUTTON      "~Cancel", PSB_CANCEL,  67, 26, 53, 14,
++        DEFPUSHBUTTON   "~Save", PSB_OK, 4, 26, 53, 14, WS_GROUP | BS_AUTOSIZE
++        PUSHBUTTON      "~Cancel", PSB_CANCEL,  59, 26, 53, 14,
+                         BS_AUTOSIZE | NOT WS_TABSTOP
+-        PUSHBUTTON      "~Help", PSB_HELP, 127, 26, 53, 14,
++        PUSHBUTTON      "~Help", PSB_HELP, 114, 26, 53, 14,
+                         BS_HELP | BS_NOPOINTERFOCUS |
+                         BS_AUTOSIZE | NOT WS_TABSTOP
+-        MLE             "", PS_CONTEXTHELP, 3, 1, 369, 19, MLS_READONLY |
++        MLE             "", PS_CONTEXTHELP, 3, 2, 369, 19, MLS_READONLY |
+                         MLS_WORDWRAP | MLS_IGNORETAB | WS_GROUP
+     END
+ END
+@@ -90,30 +90,30 @@
+ DLGTEMPLATE DLG_PSJOBPROP LOADONCALL MOVEABLE DISCARDABLE
+ BEGIN
+     DIALOG  "", DLG_PSJOBPROP, 15, 7, 375, 228,
+-            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR | FCF_BORDER
++            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR | FCF_DLGBORDER
+             PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+     BEGIN
+-        CONTROL         "", PS_NOTEBOOK_GROUP, 7, 46, 350, 182, WC_NOTEBOOK,
++        CONTROL         "", PS_NOTEBOOK_GROUP, 3, 46, 369, 182, WC_NOTEBOOK,
+                         BKS_BACKPAGESTR | BKS_MAJORTABTOP | BKS_TABBEDDIALOG |
+                         BKS_ROUNDEDTABS | BKS_TABTEXTCENTER |
+                         BKS_STATUSTEXTCENTER | BKS_SPIRALBIND |
+                         WS_VISIBLE
+-        DEFPUSHBUTTON   "~Save", PSB_OK, 7, 26, 53, 14, WS_GROUP | BS_AUTOSIZE
+-        PUSHBUTTON      "~Cancel", PSB_CANCEL, 67, 26, 53, 14,
++        DEFPUSHBUTTON   "~Save", PSB_OK, 4, 28, 53, 14, WS_GROUP | BS_AUTOSIZE
++        PUSHBUTTON      "~Cancel", PSB_CANCEL, 59, 28, 53, 14,
+                         BS_AUTOSIZE | NOT WS_TABSTOP
+-        PUSHBUTTON      "~Help", PSB_HELP, 127, 26, 53, 14,
++        PUSHBUTTON      "~Help", PSB_HELP, 114, 28, 53, 14,
+                         BS_HELP | BS_NOPOINTERFOCUS |
+                         BS_AUTOSIZE | NOT WS_TABSTOP
+-        GROUPBOX        "Settings", JPSB_GROUPBOX, 209, 21, 114, 26
+-        ICON            ICON_PORTRAIT, JPSB_PORTRAIT, 215, 23, 21, 16,
++        GROUPBOX        "Settings", JPSB_GROUPBOX, 275, 1, 99, 27
++        ICON            ICON_PORTRAIT, JPSB_PORTRAIT, 278, 5, 21, 16,
+                         NOT WS_TABSTOP
+-        ICON            ICON_MONOCHROME,  JPSB_MONOCHROME, 242, 23, 21, 16,
++        ICON            ICON_MONOCHROME,  JPSB_MONOCHROME, 302, 5, 21, 16,
+                         NOT WS_TABSTOP
+-        ICON            ICON_DUPLEX_NONE, JPSB_DUPLEX_NONE, 270, 23, 21, 16,
++        ICON            ICON_DUPLEX_NONE, JPSB_DUPLEX_NONE, 326, 5, 21, 16,
+                         NOT WS_TABSTOP
+-        ICON            ICON_OUTPUT_PRINTER, JPSB_OUTPUT_PRINTER, 297, 23, 21, 16,
++        ICON            ICON_OUTPUT_PRINTER, JPSB_OUTPUT_PRINTER, 350, 5, 21, 16,
+                         NOT WS_TABSTOP
+-        MLE             "", PS_CONTEXTHELP, 3, 1, 369, 19, MLS_READONLY |
++        MLE             "", PS_CONTEXTHELP, 3, 2, 268, 22, MLS_READONLY |
+                         MLS_WORDWRAP | MLS_IGNORETAB | WS_GROUP
+     END
+ END
+@@ -268,9 +268,11 @@
+                         PRESPARAMS PP_FOREGROUNDCOLOR, 0x000000FFL
+         AUTOCHECKBOX    "Lock ~Proportions", JPE_LOCKRGB, 9, 58, 85, 10
+         GROUPBOX        "Color", JPE_COLOR_GROUP, 2, 15, 176, 38, WS_DISABLED
+-        CONTROL         "", JPE_COLOR_LIST, 7, 17, 130, 28, WC_COMBOBOX,
++        CONTROL         "", JPE_COLOR_LIST, 8, 17, 130, 28, WC_COMBOBOX,
+                         CBS_DROPDOWNLIST | WS_VISIBLE | WS_TABSTOP |
+                         WS_DISABLED
++        AUTOCHECKBOX    "Pre-convert to greyscale", JPE_COLORCHECK, 9, 22, 127, 10,
++                        NOT WS_VISIBLE | WS_GROUP
+         ICON            ICON_MONOCHROME,  JPSB_MONOCHROME, 148, 24, 21, 16
+                         NOT WS_TABSTOP
+         LTEXT           "Scale:", JPE_SCALETEXT, 14, 4, 25, 8
+diff -burP mri\en\osdd\pscript\post32/postscr.rc mri\en\osdd\pscript\psprint/postscr.rc
+--- mri\en\osdd\pscript\post32/postscr.rc	Tue May 21 16:37:40 2002
++++ mri\en\osdd\pscript\psprint/postscr.rc	Sat Jan 24 00:29:02 2015
+@@ -273,6 +273,8 @@
+   JPE_DRAWINVERTED, "If checked, then the foreground and background color are reversed."
+   JPE_FLIPTOPBTM, "If checked, then the image is printed upside down."
+   JPE_FLIPLEFTRIGHT, "If checked, then the output is printed in reverse, like a mirror image."
++// ALT 20150123
++  JPE_COLORCHECK, "If checked, the driver converts the output to greyscale before sending it to the printer. Otherwise, color mode conversion (if any) will be handled by the printer itself."
+ 
+   JPUI_UILIST, "This listbox contains additional printer features not displayed in the other pages."
+   JPUI_PICKONE, "The item displayed here contains the current selection to the highlighted item in the 'Features' listbox.  You may select one item in the list."
+diff -burP mri\en\osdd\pscript\post32/pscript.itl mri\en\osdd\pscript\psprint/pscript.itl
+--- mri\en\osdd\pscript\post32/pscript.itl	Wed Jul 24 16:10:12 2002
++++ mri\en\osdd\pscript\psprint/pscript.itl	Tue Jan 20 16:17:04 2015
+@@ -22,7 +22,7 @@
+ .im ..\..\drvmri\gplfm.itl
+ .im ..\..\drvmri\gplweb.itl
+ 
+-.* IDH_ABOUT_PSCRIPT_DRV
++.* IDH_ABOUT_PSPRINT_DRV
+ :h1 res=15415.PostScript Printers
+ :i1 id=ps.PostScript
+ :i2 refid=ps.printers
+@@ -30,7 +30,7 @@
+ printer can interpret commands
+ embedded in text that call for special
+ features, such as rotated printing and shadows around
+-characters.  PSCRIPT.DRV supports a variety of PostScript printers,
++characters.  PSPRINT.DRV supports a variety of PostScript printers,
+ and also provides a generic selection for use with a
+ PostScript-capable printer not specifically named in the
+ models list of the printer driver installation window.
+@@ -54,7 +54,7 @@
+ :eol.
+ 
+ .*--------POSTSCRIPT.DRV FIELDS ------------
+-.* IDH_PSCRIPT_PP
++.* IDH_PSPRINT_PP
+ :h1 res=15355.Help for PostScript Printer Properties
+ :i1 id=pspp.PostScript printer properties
+ :p.
+@@ -390,9 +390,9 @@
+ :p.:hp2.Font Download:ehp2.
+ :p.Use these fields to set a limit of how many soft fonts that
+ can be sent to the printer in a document.  Soft fonts are stored
+-as files, usually identified with the file extension ".PFB", that
+-are sent to the printer when output is generated.  These soft
+-fonts take up a certain amount of printer memory based on their
++as files, usually identified with the file extension ".TTF" or
++".PFB", that are sent to the printer when output is generated.  These
++soft fonts take up a certain amount of printer memory based on their
+ size.  If too many fonts are sent the printer will abort the job.
+ The amount of memory in the printer determines how many soft
+ fonts can be sent to it.
+@@ -408,11 +408,11 @@
+ This will cause a status sheet to be printed showing the actual
+ available memory and the suggested number of fonts the printer
+ can handle. The calculation is as follows:
+-:p.Num Fonts = ( Free Memory (in bytes)  - 100,000 )  / 80,000
+-:p.80,000 per font is a very conservative number which should
+-work in all cases.  However, most fonts are considerable smaller
++:p.Num Fonts = ( Free Memory (in bytes)  - 100,000 )  / 500,000
++:p.500,000 per font is a fairly conservative number which should
++work in most cases.  In fact, most fonts are considerable smaller
+ and in many cases you could calculate the maximum number of fonts
+-based on a memory requirement as low as 40,000 per font.
++based on a memory requirement as low as 80,000 per font.
+ :p.If you want to disable the limit set it to 999.
+ :p.If you are using many soft fonts and find your jobs are
+ aborting, lower the Downloaded Fonts value by clicking on the
+@@ -464,7 +464,7 @@
+ from the :hp2.Installed Fonts:ehp2. list.
+ 
+ .*--------POSTSCRIPT.DRV JOB PROPERTIES FIELDS
+-.* IDH_PSCRIPT_JP
++.* IDH_PSPRINT_JP
+ :h1 res=15377.Help for PostScript Job Properties
+ :i1 id=psjp.PostScript Job Properties
+ :p.The Job Properties contain printer features which can be modified for each
+@@ -561,7 +561,7 @@
+ :li.:link reftype=hd res=18007.Flip Left To Right:elink.
+ :li.:link reftype=hd res=18008.Draw Inverted:elink.
+ :li.:link reftype=hd res=15379.Scale:elink.
+-:li.:link reftype=hd res=15382.Enable Color:elink.
++:li.:link reftype=hd res=15382.Color:elink.
+ :li.:link reftype=hd res=1093.Undo:elink.
+ :li.:link reftype=hd res=1094.Defaults:elink.
+ :eul.
+@@ -606,8 +606,8 @@
+ res=15378.Orientation:elink. group, which is found in the :link reftype=hd
+ res=18000.Paper:elink. page.
+ :p.The second icon identifies the current color selection, and is modified every
+-time :link reftype=hd res=15382.Enable Color:elink. is modified.  :link
+-reftype=hd res=15382.Enable Color:elink. is found in the :link reftype=hd
++time :link reftype=hd res=15382.Color:elink. setting is modified. The :link
++reftype=hd res=15382.Color:elink. setting is found in the :link reftype=hd
+ res=18002.Effects:elink. page.
+ :p.The third icon identifies the current duplex selection, and is modified every
+ time a selection in the :link reftype=hd res=15396.Duplex Options:elink. group
+@@ -705,12 +705,18 @@
+ (e.g. :hp2.Tray 1(Manual):ehp2.) in the :hp2.Available Trays:ehp2. listbox.
+ 
+ .* IDH_COLOR
+-:h1 res=15382.Help for Enable Color
+-:i2 refid=psjp.Enable Color
+-:p.Select this
+-:link reftype=hd
+-res=17047.check box:elink. to enable color printing.  A check mark appears if
+-color output is desired.  This control is disabled for all monochrome printers.
++:h1 res=15382.Help for Color
++:i2 refid=psjp.Color
++:p.These options allow you to enable color and/or select the color mode for
++printers which support it.
++:p.If the printer supports selectable color models, the combo-box will show
++all of the available models.  In this case, the printer, rather than
++the driver, normally assumes responsibility for setting the color or
++greyscale mode.  For such printers, the "Pre-convert to greyscale"
++:link reftype=hd res=17047.check box:elink. will be shown; selecting this
++option forces the driver to convert the job to greyscale before sending it
++to the printer, which may be useful in some circumstances (for example,
++when printing to file).
+ 
+ .* IHD_SETRESOLUTION
+ :h1 res=15392.Help for Resolution
+diff -burP mri\en\osdd\pscript\post32/readme mri\en\osdd\pscript\psprint/readme
+--- mri\en\osdd\pscript\post32/readme	Thu Jan  1 00:00:00 1970
++++ mri\en\osdd\pscript\psprint/readme	Wed Jan 21 10:57:10 2015
+@@ -0,0 +1,747 @@
++PSPRINT.DRV POSTSCRIPT DRIVER
++Preview release 5: 2015-01-20
++
++
++WHAT IS THIS?
++
++  This is an experimental new version of the OS/2 PostScript print driver,
++  which aims to supersede the original driver (PSCRIPT.DRV) from IBM.  
++  Compared to the IBM driver, it fixes a number of bugs, contains some 
++  tweaks designed to improve compatibility with CUPS, and has one major
++  new feature: support for embedded TrueType fonts.
++
++  Basically, the current PostScript driver only allows Type 1 PostScript
++  fonts to be embedded in a print job.  With this new version, it should
++  now be possible to embed TrueType fonts as well (with a few limitations
++  which are outlined below).
++
++  PSPRINT includes all fixes and updates from the ECUPS driver.  It should
++  be possible to use PSPRINT to print using CUPS... with the caveat, of
++  course, that you will have to import the PPD file for your printer
++  yourself.
++
++
++What does "embedding" mean?
++
++  Well, when you send a file to be printed, and that file contains text
++  which is formatted with a specific font (almost anything that isn't a
++  plain-ASCII text file, basically -- and sometimes even those as well),
++  there are two main options for rendering that text on the printed page.
++
++  The cheap-and-dirty way is for the OS/2 printer driver to draw (or
++  "rasterize") the text as a static image (a bitmap) using the OS/2
++  graphics engine, and then send that bitmap to the printer.
++
++  The more intelligent way is to send the literal text to the printer
++  (along with its layout parameters), and tell the printer "print this
++  text using font X".  This generally results in a smaller, faster print
++  job, AND a higher-quality printout.
++
++  The problem with the second method, however, is that the font in 
++  question has to actually be available to the printer.  (It's no good
++  telling the printer "print this text in Garamond" if the printer has no
++  idea what "Garamond" is.)  So some means of loading the actual font onto
++  the printer is needed.
++
++  There are basically three ways that the printer can get access to a
++  given font.  First of all, most modern laser printers have a selection
++  of fonts built into their hardware ROM.  (According to the PostScript
++  standard, in fact, every PostScript printer is supposed to have at least
++  a basic set of 35 standard fonts built in.)  These are sometimes
++  referred to as "device fonts".
++
++  Second, if the printer has onboard RAM or an internal hard drive, it's
++  possible for you (or your system administrator) to manually download
++  fonts to the printer using the "Font Manager" page of the printer's
++  driver properties dialog.  (Note: the Font Manager does not seem to work
++  with all printers, so this option may not be available to you.)
++  Unfortunately, if your system only has RAM rather than a hard drive, any
++  fonts you download will be lost whenever the printer is powered off or
++  rebooted.
++
++  The third way of getting fonts onto a printer is to actually include the
++  font file (or a necessary subset of it) as part of the print job.  This
++  is referred to as "embedding" the font.  It is this feature that PSPRINT
++  specifically improves, by allowing the embedding of TrueType fonts (if
++  the printer supports it).  Note that there is a configurable maximum 
++  number of fonts that can be embedded in a single job, which defaults to
++  2 for many printers.  You can increase this (up to a maximum of 999)
++  through the driver properties dialog; see below for more information.
++
++  For small print jobs, embedding fonts can increase the size of the job
++  as sent to the printer... but for moderate-to-large sized jobs, that
++  will be more than made up for by not having to rasterize all the text as
++  bitmaps (which itself consumes huge amounts of space).  Basically, the
++  more text there is relative to the number of fonts used, the greater the 
++  savings.  Very small documents (with only a few lines of text) will
++  probably produce much larger print jobs with this driver; conversely,
++  however, larger documents will probably produce significantly smaller 
++  jobs.  (The size of the job file impacts not only the amount of temporary
++  disk space required to generate and spool the job, but the amount of 
++  printer memory the job consumes.  Also, the smaller the job file, the
++  faster printing will be, generally speaking.)
++
++  If, conversely, the print job has to rasterize all the text into bitmaps,
++  then the printer isn't printing the text itself so much as printing a
++  previously-generated picture of the text.  This has various undesirable
++  side effects:
++   - The printed text looks noticeably less crisp.
++   - Since the text has to be specified as a grid of pixels rather than a
++     simple string, the PostScript data required to represent it is a lot
++     larger.
++   - Doing text searches in the PostScript data is impossible, as the
++     contents are not, technically, text at all (just images).  This is
++     particularly a problem when using the PostScript printer driver in
++     order to generate PDF files.
++
++
++INSTALLATION
++
++  Unlike the first test release, this release uses a new name for the
++  driver (PSPRINT.DRV instead of PSCRIPT.DRV).  This should allow you to
++  install it alongside the "normal" IBM PostScript driver.
++
++  If you already have my first test release (named PSCRIPT.DRV) installed,
++  you are recommended to revert it to the original IBM driver.
++
++  To install or update PSPRINT:
++
++   1. If you have either of the first two test releases installed (with a
++      BLDLEVEL signature of 30.900 or lower), then you should delete the
++      file AUXPRINT.PAK (if it exists) from the driver's subdirectory
++      under \OS2\DLL.
++
++      One (or possibly both) of the aforementioned early version may also
++      have created a log file called C:\PSPRINT.LOG (with that specific
++      drive letter) due to some debug logic having been inadvertently left
++      in the release build.  Delete this file if it exists.
++
++   2. Expand the contents of the ZIP file into some directory.  I suggest
++      one with a fairly short path, because you'll have to type the path
++      name in manually in the next step.
++
++
++   ** NOTE: If you have the PM Printer Manager (included in eComStation
++      2.2 as "Manage Printers"), you can install PSPRINT by opening "File"
++      --> "Manage presentation drivers", then clicking on "Add/Update" and
++      selecting PSPRINT.DRV from the path you extracted it to.  In this
++      case, you can skip to step 5 below.  (You are also advised to use the
++      Printer Manager to re-import any previously-imported PPD files
++      afterwards.)
++
++
++   3. If you will be using any imported printer drivers created from PPD
++      files, you must re-import them for use with the current release.
++      See the instructions below under "Importing PPD Files".  You should
++      do this BEFORE installing the driver in step 4.  (However, if you
++      have the PM Printer Manager installed, you can alternatively use it
++      to re-import PPD files after the installation instead.)
++
++   4. Bring up the "Install New Printer Driver" dialog.  You can do this
++      either by going to create a new printer object (by dragging or
++      double-clicking a Printer template, or using the install utility
++      provided with eCS 1.2 and up), or by opening the properties notebook
++      of an existing printer object, going to the "Printer driver" page,
++      right-clicking on one of the driver icons and selecting 'Install'.
++
++      Select the "other printer driver" radiobutton and enter the fully-
++      qualified path to where you unzipped the files (in step 2).  Press
++      the 'Refresh' button at the bottom, then select and install the
++      desired printer model.
++
++      By the way, PSPRINT now includes a new generic printer model called
++      "Generic PostScript (Enhanced)".  It is designed to provide generic
++      support for modern printers for which the older and more primitive
++      "Generic PostScript Printer" model is insufficient.  In particular,
++      it supports TrueType fonts whereas the latter does not.  It also
++      provides various improved options for colour, duplexing, resolution,
++      and paper size.  If you don't have a PPD file for your specific
++      printer, or are unable/unwilling to import one, you should still be
++      able to get good results by selecting "Generic PostScript (Enhanced)".
++      (As far as I know, you can use it even if your printer doesn't
++      technically support PostScript level 3; PSPRINT doesn't make use of
++      any level 3-specific features that I know of.)
++
++   5. Configure the printer and job options as necessary (e.g. paper size,
++      output trays, colour mode, etc.).  In case you're not familiar with
++      doing this, there are two separate configuration dialogs:
++        - The "Printer Properties" dialog, sometimes referred to as
++          "Driver Properties".  This is for setting global settings for
++          the printer (such as its hardware configuration).  It is
++          accessed by double-clicking on the icon for the printer driver
++          on the "Printer driver" page of the printer WPS object's
++          properties notebook.
++        - The "Default Job Properties" dialog, which is for setting the
++          default options used for a single print job.  (The same dialog
++          is generally accessible when you print a file from within an
++          application, in order to set the options for that specific job.)
++          It is accessed using the "Job properties" button on the "Printer
++          driver" page of the printer WPS object's properties notebook.
++
++   6. You can delete the driver files from the directory where you unzipped
++      them in step 2 if you wish.  However, you may find it useful to keep
++      them around in case you need to import other PPD files manually in 
++      the future.  (If you are using the Printer Manager, it should have
++      saved the driver files to a dedicated directory which it remembers,
++      so you can delete the original files from where you unzipped them.)
++
++
++Importing PPD Files
++
++  To add a new driver from a PPD, you need to import the PPD file into
++  PSPRINT.  There are a couple of graphical tools which can do this,
++  including my InstPDR utility (included in eComStation versions 1.2 
++  through 2.1), the CUPS Printer Wizard (only useful if you are planning 
++  to use PSPRINT for CUPS-based printers), and the Printer Manager 
++  (included in eComStation 2.2).  These tools should be relatively self-
++  explanatory, and are not described further here.
++
++  The other option is to import a PPD from the command line, using the
++  PIN utility.  This procedure is outlined below.
++
++  Before using PIN, you need to properly prep the PPD file(s) you will be
++  importing.
++
++  First of all, if the PPD file is for use with CUPS, you MUST run the
++  CLEANPPD.CMD script (included) on it.  The syntax is simple:
++      cleanppd <ppd_file>
++  The PPD file will be modified in place (so you might want to back up
++  the original file first).
++
++  Next, run PPDENC.EXE to convert the codepage into a supported value.
++  The syntax is
++      ppdenc <input_ppd_file> <output_ppd_file>
++  to convert a single file, or
++      ppdenc -d <input_directory> <output_directory>
++  to convert all files in a directory.
++
++  Once this is done, you can run PIN itself.  Place all PPD files to be
++  imported into a single directory.  Then run PIN with:
++      pin ppd <ppd_directory> [<path\to\>]psprint.drv
++
++  Then you can (re)install the driver for the new printer model (as per
++  step 4 above).
++
++  * NOTE 1: It may be necessary to manually copy the file AUXPRINT.PAK to
++            the \OS2\DLL\PSPRINT directory after doing the above.  For
++            some reason, OS/2 does not always copy this file properly when
++            reinstalling the printer driver.
++
++  * NOTE 2: You MUST use the version of PIN.EXE that comes with this
++            specific release of PSPRINT.  (In fact, an incompatible
++            version of PIN will probably just refuse to do anything, but 
++            it's better to be safe than sorry.)
++
++
++HOW TO USE IT
++
++  Once you've installed this driver, you need to make sure your printer is
++  actually configured to allow font embedding.
++
++  To do this, open the printer properties, go to the "Printer driver" page,
++  and double-click on the driver icon to open the driver settings dialog.
++  On the "Options" page, check the "Maximum download fonts" setting.  This
++  setting controls how many fonts can get embedded into a print job.  It
++  frequently defaults to only 2.  To allow decent embedding of fonts, you
++  should bump this number up; I generally suggest a value of at least 10-12,
++  and more if your printer has plenty of RAM.  (The less memory your printer 
++  has, the lower the maximum should be; 10 or 12 SHOULD be OK for most 
++  printers.  The maximum is 999, which is actually a special value indicating
++  no limits at all - this is useful if you're only printing to files.  A
++  value of 0 will disable font embedding entirely.)
++
++  The best value will depend on the size of the fonts you typically use.  To
++  get a general idea, take a look at the contents of your system \PSFONTS
++  directory and see what the average file size of all .PFB and .TTF files is.
++  The driver will never embed a .TTF font whose file size larger than 2 MB;
++  there is no limit on the size of .PFB fonts, but these are very unlikely to
++  be larger than a few hundred kilobytes at most.  NOTE, however, that when
++  a font is embedded into a document, it is converted into an ASCII format
++  which can approximately double the file size!
++
++  As a simple guideline, I'd suggest starting out with a value from one of the
++  following ranges, based on the amount of memory in your printer:
++
++    64 MB or more:    25-40
++    32 MB:            15-30
++    16 MB:            10-20
++     8 MB:            8-12
++     4 MB or less:    2-8
++
++  Then you can adjust this up or down over time as you determine what works.
++
++  Keep in mind that each style of a font family (bold, italic, etc.) counts
++  as a separate font; so even if you have a document which only uses one
++  font family (like Arial), it would still take four fonts to represent it
++  fully.
++
++  You should also make sure that the checkbox "Use downloaded fonts" on the
++  "Options" page of the printer's Job Properties dialog (accessible using
++  the "Job properties" button on the "Printer driver" page of the printer
++  object properties) is checked.  (This option may actually refer to fonts 
++  which were separately downloaded to the printer using the Font Manager
++  page, rather than to embedded fonts; the code is a little unclear so I'm 
++  not totally certain about that.  Best to enable it anyway.)
++
++
++LIMITATIONS
++
++  ************************************************************************
++  * This driver is still classified as experimental, and has various     *
++  * limitations which are documented below.  Make sure you read AND      *
++  * UNDERSTAND them before using this driver.                            *
++  ************************************************************************
++
++  - "UIConstraints" items defined in a PPD file are not supported for UI
++    items with more than 32 values.  (This is a restriction of the IBM
++    code, and exists in all OS/2 PostScript drivers.  It is mentioned here
++    because only recent versions of PIN actually support more than 30
++    values per UI item to begin with.)
++
++
++  - Printers which lack built-in TrueType interpreters (or which fail to
++    correctly report having them) do not support embedded TrueType fonts;
++    in such cases, text rendered in TrueType fonts will be rasterized to
++    bitmap in the old way, with the usual tradeoffs.  (This is not a bug,
++    simply a caveat.)
++
++
++  - Subsetting (a.k.a. incremental downloading) of fonts has not been
++    implemented (and may never be -- I'm not entirely sure how possible
++    this is given the basic design of the driver).  This means that the
++    ENTIRE font will always get embedded into the print job file.
++
++    Of course, this has always been true, even with Type 1 fonts.  The
++    difference is that TrueType fonts can support a great many more
++    characters than Type 1 fonts, and as a result are frequently a lot
++    larger.
++
++    Consequently, the printer job files (or output PostScript files) can
++    quickly grow quite large if more than a few fonts are used.  This
++    increases the likelihood of your printer failing to print the job due
++    to insufficient memory.
++
++    If you find your jobs are frequently failing for this reason, reduce
++    the maximum number of downloaded fonts in the driver settings (as
++    previously described under "How to Use It").
++
++
++  - In light of the above, by way of a simple sanity check I have imposed
++    an upper size limit on embeddable TrueType fonts.  Any font whose .TTF
++    file is larger than either 2 MB, or half of the printer's reported free
++    virtual memory (whichever is less) will never be embedded into a print
++    job.  This should prevent the driver from trying to embed an entire
++    font like "Arial Unicode MS" into a job (which could overwhelm some
++    printers). 
++
++    This restriction only applies to TrueType fonts.  There is no limit on
++    the size of PostScript fonts: IBM never saw fit to impose one, and in
++    any case the font files are generally much smaller.
++
++
++  - Given the design of the pre-existing routines being used to convert
++    a TrueType font into a PostScript data stream, it's currently a two-
++    step process: the font is first converted to PostScript as a temporary
++    file, and then that file is copied into the actual print job (and the
++    temporary file is deleted).  This extra step may slow down print
++    processing slightly, although hopefully you won't notice much
++    difference.  It also (very briefly) uses some disk space in your 
++    %TMP% directory.
++
++
++  - When building its internal array of font resources used in a job, the
++    PostScript driver parses and stores kerning information for each font.
++    Since the TrueType processing routines provided by IBM don't support
++    the kerning table, I've simply omitted this information for TrueType
++    fonts.
++
++    I'm not actually sure what effect, if any, this may have.  Since the
++    PostScript driver doesn't render the text itself (the printer's own
++    internal PostScript interpreter does that), I really don't know what
++    this information is used for.  It's pure speculation, but I suppose it
++    MIGHT be used for calculating string lengths; if so, the lack of this
++    information probably won't have much effect (any difference that
++    results from kerning should be trivially small, and the worst case is
++    likely to be that it allows fractionally more space for a string than
++    is strictly necessary).  In any case, the GPI TrueType support used to
++    rasterize the text in the standard IBM driver doesn't support kerning
++    information either, so you're not likely to be any worse off...
++
++
++
++HISTORY
++
++  2015-01-20 (version 30.905 / preview release 5)
++   - Driver will no longer attempt to decide whether or not output should
++     be greyscaled for printers with ColorModel UIItems defined; instead,
++     responsibility is left to the printer - unless the new checkbox in 
++     the job properties (below) is checked.
++   - Added new 'pre-convert to greyscale' checkbox option to job properties
++     (Effects page); applies only to printers using ColorModel. This forces
++     the driver to convert the job to greyscale before sending it to the
++     device; if not set (the default), responsibility for conversion (if
++     any) is left up to the printer. 
++   - [PIN] Some attempts to prevent crashes with large PPD files.
++   x Changed PAK data length field from signed to unsigned short, which
++     may help in dealing with some larger PPD files.
++   - Added some preliminary logic for dealing with OTF (OpenType) fonts.
++     (This is forward planning only; the code has no actual effect yet.)
++   - Adjusted the 'Print Font Capacity' button logic to calculate based 
++     on an average font file size of 500 KB (up from 80 KB).
++   - Changed default driver URL shown in printer properties.  (Note that
++     the change will not be reflected in previously-installed drivers.)
++   - Reduced 'safe' maximum TTF size in cases where FreeVM cannot be
++     determined to 512 KB.
++
++  2013-08-12 (version 30.904 / preview release 4)
++   - Fixed problem with UI Option settings never getting written if they
++     had defined location of Any (this fix matches the latest IBM PSCRIPT
++     driver).
++   - Put more information into BLDLEVEL signature.
++   - Restored missing PJL initialization command in DEVESC_RAW mode: fixes
++     broken printing with some printers.
++   - Fixed missing definition of 'mdef' command in PostScript job header.
++   - Renamed "PostScript Level 3 Printer" to "Generic PostScript (Enhanced)"
++     to ensure that it appears under the "Generic" manufacturer.
++   - Removed over 200 previously-built-in printers that lack Type42 support;
++     this should free up more space for importing new models.
++   - Added remaining printers from PSCRIPT 30.827 (except for a couple which
++     have no Type42 support).
++   - Increased maximum size of downloaded fonts where FreeVM is known to 
++     2 MB (or half of FreeVM if the latter is less).  This should allow
++     embedding of least some DBCS fonts for Japanese, Korean, and possibly
++     Traditional Chinese.  (The maximum is still 1 MB for printers where
++     no FreeVM is defined.)
++
++  2010-12-18 (version 30.903 / preview release 3)
++   - Integrated changes from ECUPS.DRV (thanks to Paul Smedley).
++   - Cleaned out some leftover debug logging.
++   - Other minor updates and cleanup.
++   - Changed PAK file signature to "IBM DDPAK V1.2" (from V1.0) to help
++     safeguard against incorrect program versions being used.  This is
++     because the PAK file format is now slightly different from one used
++     by IBM's PSCRIPT.DRV, due to a new field being added.  (V1.2 was
++     chosen because 1.1 seems to have been intended for a feature update
++     from IBM which was probably never released.)
++   - [PPDENC] Added support for MacStandard encoding.
++   - [PPDENC] Fixed bug where changing the encoding "UTF-8" to "IBM-850"
++     would overwrite the start of the following line.
++   - [PIN] Fixed bug where lack of a *DefaultFont setting would cause the
++     automatic default value to be stored in an invalid format.
++   - [PIN] Fixed several other bugs, in particular where invalid offsets
++     were being set for nonexistent values.  This hopefully fixes some
++     specific crashes caused by CUPS PPD files.  (No promises there aren't
++     other potential crashes which I haven't discovered yet, mind you...)
++   - Added several printer models which were included in later versions of
++     PSCRIPT.DRV but are missing from the DDK.  Unfortunately, not all of
++     the missing models could be restored like this, because I was unable
++     to find suitable PPD files available under free license.  The models
++     which are still missing are listed above, under "Limitations".
++   - Added a new generic model called "PostScript Level 3 Printer".  This
++     is recommended for use instead of the built-in "Generic PostScript
++     Printer", as it supports TypeType fonts, duplexing, colour, higher
++     resolutions, and multiple paper sizes.
++
++  2010-11-24 (version 30.900 / test release 2)
++   - Modified driver (and PIN) to check the PPD file for TrueType (Type
++     42) font support.  TTF embedding will now only be done if the printer
++     supports it.
++   - Added an extra size limit on embeddable TrueType fonts: either 1 MB
++     or half of the FreeVM size reported by the PPD, whichever is less.
++   - Cleaned out some obsolete debug output.
++   - Changed driver name to PSPRINT.DRV to allow installing alongside the
++     "normal" PSCRIPT.DRV from IBM.
++   - Set BLDLEVEL version to 30.900.
++
++  2010-11-17 (test release 1)
++   - Initial release.
++
++
++
++APPENDIX - PRINTER MODELS REMOVED FROM DRIVER
++
++  The following printers which were supported by the IBM PSCRIPT driver
++  (version 30.827) have been REMOVED from PSPRINT -- as they do not have
++  TrueType interpreters (at least according to their PPD files), and thus
++  are unable to take advantage of the new TrueType font embedding feature.
++  Users who have one of these printers (and are not using CUPS) might as
++  well continue to use the latest IBM PSCRIPT driver.
++
++    AST TurboLaser
++    Agfa Matrix ChromaScript v51.8
++    Agfa-Compugraphic 9400PS v49.3
++    Agfa/Compugraphic 400PS
++    Apple LaserWriter
++    Apple LaserWriter II NT
++    Apple LaserWriter II NTX
++    Apple LaserWriter Plus
++    Apple LaserWriter Plus v42.2
++    Apple LaserWriter Pro 600
++    Apple LaserWriter Select 360f
++    Brother HL-10PS/DPS (PS)
++    Brother HL-10h (PS)
++    Brother HL-1260
++    Brother HL-4PS (PS)
++    Brother HL-8PS (PS)
++    Brother HS-1PS (PS)
++    Brother HS-1PS2
++    COMPAQ PAGEMARQ 15
++    COMPAQ PAGEMARQ 20
++    Canon LBP-2030PS
++    Canon LBP-4/4 Plus/4 Lite PS-2
++    Canon LBP-8III PS-1
++    Canon LBP-8IIIR PS-1
++    Canon LBP-8IIIT PS-1
++    Canon LBP-A404PS
++    Canon LBP-A404PS Lite
++    Canon PS-GP Unit
++    Canon PS-IPU Color Laser Copier
++    ColorMaster Plus 6603 v233.1
++    ColorMaster Plus 6613 v233.1
++    ColorMaster Plus 6613XF v260.0
++    Colormate PS v51.9
++    Dataproducts LZR 1260 v47.0
++    Dataproducts LZR-2665
++    Digital DECcolorwriter 1000  17
++    Digital DECcolorwriter 1000  39
++    Digital LN03R ScriptPrinter
++    Digital LPS PrintServer 40
++    EPSON EPL-5500 EPSONScript
++    Epson EPL-7500 v52.3
++    Epson EPL-8000 PS Card 82605
++    Fiery 150i-5775 Color Server
++    Fiery 150i-MajestiK Color Server
++    Fiery 150i-R0 Color Server
++    Fiery 200i-5775
++    Fiery 200i-5775 Color Server
++    Fiery 200i-CF80 J Color Server
++    Fiery 200i-MajestiK
++    Fiery 200i-MajestiK Color Server
++    Fiery 200i-R0 Color Server
++    Fiery 200i-R1 Color Server
++    Fiery XJ CLC 350/550 Color Server
++    Fiery XJ CLC 700/800 Color Server
++    Fiery XJ MajestiK Color Server
++    Fiery XJ NEW PIXEL DiOS/DiO Color Server
++    Fiery XJ PIXEL DiOS/DiO Color Server
++    Fiery XJ R Color Server
++    Fiery XJ R Color Server v2013.114
++    Fiery XJ R1 Color Server v2013.114
++    Fiery XJ R2 Color Server
++    Fiery XJ R2 Color Server v2013.114
++    Fujitsu PrintPartner 12V
++    Fujitsu PrintPartner 16ADV
++    Generic PostScript Printer
++    HP DesignJet 650C v2013.109
++    HP DeskJet 1200C
++    HP DeskJet 1600CM
++    HP LaserJet 4/4M PS v2011.110
++    HP LaserJet 4ML PS v2013.103
++    HP LaserJet 4Si/4Si Mx PS v2011
++    HP LaserJet IID v52.2
++    HP LaserJet III Cartridge Plus
++    HP LaserJet III v52.2
++    HP LaserJet IIID Cartridge Plus
++    HP LaserJet IIID v52.2
++    HP LaserJet IIIP Cartridge Plus
++    HP LaserJet IIIP PS v52.2
++    HP LaserJet IIISi PS v52.3
++    HP LaserJet IIP v52.2
++    HP PaintJet XL300 PS v2011.112
++    IBM 4019 v52.1 (17 Fonts)
++    IBM 4019 v52.1 (39 Fonts)
++    IBM 4029 (17 Fonts 300 Dpi)
++    IBM 4029 (17 Fonts 600 Dpi)
++    IBM 4029 (39 Fonts 300 Dpi)
++    IBM 4029 (39 Fonts 600 Dpi)
++    IBM 4039 LaserPrinter (300 Dpi)
++    IBM 4039 LaserPrinter (600 Dpi)
++    IBM 4039 plus
++    IBM 4079 Color Jetprinter PS
++    IBM 4216-031 v51.4 SheetFeed
++    IBM Personal Page Printer II-30
++    IBM Personal Page Printer II-31
++    IBM Personal Pageprinter
++    ITEC ColorImage 2400
++    ITEC Laserimage 1200
++    Konica 7050PS International
++    Konica 7050PS US
++    Konica 7728/PS
++    Konica 7728PS International
++    Konica Minolta Magicolor 3300
++    Konica Minolta Magicolor 7300
++    Konica Minolta Magicolor 9100
++    Kyocera FS-1500 (KPDL) v48.0
++    Kyocera FS-1500A (KPDL) v48.0
++    Kyocera FS-1550 (KPDL) v48.0
++    Kyocera FS-1550 (KPDL) v48.0
++    Kyocera FS-1550+ (KPDL)
++    Kyocera FS-1550A (KPDL) v48.0
++    Kyocera FS-1600A (KPDL)
++    Kyocera FS-3400 (KPDL) v48.0
++    Kyocera FS-3400+ (KPDL)
++    Kyocera FS-3400A (KPDL) v48.0
++    Kyocera FS-3500 (KPDL) v48.0
++    Kyocera FS-3500A (KPDL) v48.0
++    Kyocera FS-3600A (KPDL)
++    Kyocera FS-400 (KPDL) v48.0
++    Kyocera FS-400A (KPDL) v48.0
++    Kyocera FS-5500 (KPDL) v48.0
++    Kyocera FS-5500A (KPDL) v48.0
++    Kyocera FS-6500 (KPDL)
++    Kyocera FS-6500A (KPDL)
++    Kyocera FS-850 (KPDL) v48.0
++    Kyocera FS-850A (KPDL) v48.0
++    Kyocera P-2000 (KPDL)
++    Kyocera Q-8010 (KPDL)
++    Lexmark 4039 plus
++    Lexmark Optra
++    Linotronic 100 v38.0
++    Linotronic 100 v42.5
++    Linotronic 200 v47.1
++    Linotronic 200 v49.3
++    Linotronic 300 v47.0
++    Linotronic 300 v47.1
++    Linotronic 300 v49.3
++    Linotronic 500 v49.3
++    Minolta-QMS Magicolor 2200
++    Minolta-QMS Magicolor 2210
++    Minolta-QMS Magicolor 3100
++    Minolta-QMS Magicolor 6110
++    Minolta-QMS Magicolor 7300 Mono
++    Minolta/QMS PagePro 9100
++    NEC Colormate PS/40
++    NEC Colormate PS/80
++    NEC LC-890
++    NEC Silentwriter 95 v2010.121
++    NEC Silentwriter 95f v2011.111
++    NEC Silentwriter 97 v2011.111
++    NEC Silentwriter S62P v2010.121
++    OKI MICROLINE 800PSII LT
++    OKI MICROLINE 801PS
++    OKI MICROLINE 801PS+F
++    OKI MICROLINE 801PSII
++    OKI MICROLINE 801PSII+F
++    Oki OL830-PS v52.5
++    Oki OL840-PS v51.8
++    Oki OL850-PS v52.5
++    Olivetti LP 5000
++    Panasonic KX-P4455 v51.4
++    Panasonic KX-P5400 v2013.112
++    Panasonic KX-P5410 39 Font
++    Phaser Card v1.1
++    QMS 1060 Level 2
++    QMS 1660 Level 2
++    QMS 1725 Print System
++    QMS 2025 Print System
++    QMS 2060 Print System
++    QMS 2425 Print System
++    QMS 3225 Print System
++    QMS 3260 Print System
++    QMS 3825 Print System
++    QMS 3825 Print System
++    QMS 4032 Print System
++    QMS 4060 Print System
++    QMS 420 Print System
++    QMS 4525 Print System
++    QMS 860 Print System
++    QMS 860+ Print System
++    QMS ColorScript 100
++    QMS ColorScript 100 Mod 10
++    QMS ColorScript 100 Mod 30
++    QMS ColorScript 100 Mod 30si
++    QMS ColorScript 210
++    QMS ColorScript 230
++    QMS ColorScript Laser 1000
++    QMS IS X320T
++    QMS magicolor 2 CX
++    QMS magicolor 2+
++    QMS magicolor 330
++    QMS magicolor 6100
++    QMS magicolor CX
++    QMS magicolor Laser Printer
++    QMS magicolor plus Level 2
++    QMS-PS 1500
++    QMS-PS 1700
++    QMS-PS 2000
++    QMS-PS 2200
++    QMS-PS 2210
++    QMS-PS 2220
++    QMS-PS 410
++    QMS-PS 800
++    QMS-PS 800 Plus
++    QMS-PS 810
++    QMS-PS 810 Turbo
++    QMS-PS 815
++    QMS-PS 815 MR
++    QMS-PS 820
++    QMS-PS 820 Turbo
++    QMS-PS 825
++    QMS-PS 825 MR
++    Qume ScripTEN
++    Ricoh DS5330
++    Ricoh LP6200 PS PrintView
++    Ricoh PC Laser 6000-PS
++    Seiko ColorPoint PS Model 04
++    Seiko ColorPoint PS Model 14
++    Seiko ColorPoint PSN Model 14
++    Seiko ColorPoint PSN Model 4
++    Seiko ColorPoint2 PSF
++    Seiko Personal ColorPoint PS
++    Seiko Personal ColorPoint PSE
++    Seiko Prof. ColorPoint PSH
++    Seiko Prsnl ColorPoint PS v241
++    Silentwriter LC 890XL v50.5
++    Silentwriter2 290 v52.0
++    Silentwriter2 Model 90 v52.2
++    Star LS5 TT
++    TI 2115 (13 fonts) v47.0
++    TI 2115 35 fonts v47.0
++    TI OmniLaser 2108
++    TI Omnilaser 2115
++;   TI microLaser 600
++    TI microLaser PS17 v.52.1
++    TI microLaser PS35 v.52.1
++    TI microLaser Pro 300
++    TI microLaser XL PS17 v.52.1
++    TI microLaser XL PS35 v.52.1
++    TI microLaser16 Turbo v2010.119
++    TI microLaser6 Turbo v2010.119
++    TI microLaser9 Turbo v2010.119
++    TI microWriter PS v.52.1
++    Tektronix Phaser 200J v2011.108(4)
++    Tektronix Phaser 200e 17 fonts
++    Tektronix Phaser 200e 39 fonts
++    Tektronix Phaser 200i v2011.108
++    Tektronix Phaser 200i v2011.108
++    Tektronix Phaser 220J v2013.113
++    Tektronix Phaser 220e with 17 fonts v2013.113
++    Tektronix Phaser 220e with 39 fonts v2013.113
++    Tektronix Phaser 220i v2013.113
++    Tektronix Phaser 300J v2013.113
++    Tektronix Phaser 300i v2013.113
++    Tektronix Phaser II PX v2.02
++    Tektronix Phaser II PXe 17 font
++    Tektronix Phaser II PXe 39 font
++    Tektronix Phaser II PXi v2010
++    Tektronix Phaser II PXiJ v2011.108
++    Tektronix Phaser III PXi v2010
++    Tektronix Phaser III PXiJ v2011.108
++    Tektronix Phaser IISD v2011
++    Tektronix Phaser PX
++    Tektronix Phaser PXi v2011.108
++    Varityper VT-600
++    Wang LCS15
++    Wang LCS15 FontPlus
++    XPrint 4915 PostScript
++    XPrint 4920/4925 PostScript
++    Xerox 4220 LPS v2013.112
++    Xerox 4900 PostScript
++
++  For other printer models which are manually imported to the driver with PIN,
++  TrueType font embedding will be supported if (and only if) the printer's PPD
++  file specifies "*TTRasterizer: Type42".
++
++--
++Alex Taylor - alex at altsan dot org
++January 2015

@@ -1,0 +1,113 @@
+--- src\osdd\pscript\post32\makefile	Fri Mar 28 20:49:18 2003
++++ src\osdd\pscript\psprint\makefile	Fri Dec  5 20:50:06 2014
+@@ -122,12 +122,16 @@
+       "$(NLV)" == "tw" || "$(NLV)" == "TW" || \
+       "$(NLV)" == "ko" || "$(NLV)" == "KO"  )
+ # Do not modify these lines
+-PS_DEF_NAME = PSCRIPT2
+-PS_DRV_NAME = pscript2
++#PS_DEF_NAME = PSCRIPT2
++#PS_DRV_NAME = pscript2
++PS_DEF_NAME = PSPRINT2
++PS_DRV_NAME = psprint2
+ !else
+ # Modify these flags to change the driver name.
+-PS_DEF_NAME = PSCRIPT
+-PS_DRV_NAME = pscript
++#PS_DEF_NAME = PSCRIPT
++#PS_DRV_NAME = pscript
++PS_DEF_NAME = PSPRINT
++PS_DRV_NAME = psprint
+ !endif
+ 
+ # GP@SWHT Enable Visual Age using for PS
+@@ -157,7 +161,7 @@
+ !endif
+ 
+ SUBSYS          = osdd
+-SUBSYS_RELATIVE = pscript\post32
++SUBSYS_RELATIVE = pscript\$(PS_DRV_NAME)
+ SRC_RELATIVE    = src\$(SUBSYS)\$(SUBSYS_RELATIVE)
+ SRC_NL_RELATIVE = mri\$(NLV)\$(SUBSYS)\$(SUBSYS_RELATIVE)
+ MRI_NL_EN       = $(ROOT)\mri\en\$(SUBSYS)\$(SUBSYS_RELATIVE)
+@@ -171,7 +175,7 @@
+ PS_SRC   = $(ROOT)\$(SRC_RELATIVE)
+ MRIPATH  = $(ROOT)\$(SRC_NL_RELATIVE)
+ PS_INC   = $(PS_SRC)\inc
+-OUTDIR   = $(DRIVERS_NLV)\pscript
++OUTDIR   = $(DRIVERS_NLV)\$(PS_DRV_NAME)
+ DATAPATH = $(ROOT)\obj\data\pscript\$(NLV)
+ DATAINC  = $(DATAPATH)\inc
+ MRIOUT   = $(O_NLV)
+@@ -197,9 +201,9 @@
+ # Refer to Nmake documentation, if you have any questions about MAKEDIR
+ #------------------------------------------------------------------------------
+ 
+-ROOT            = $(MAKEDIR:\src\osdd\pscript\post32=)
++ROOT            = $(MAKEDIR:\src\osdd\pscript\psprint=)
+ !if "$(ROOT)" == "$(MAKEDIR)"
+-ROOT            = $(MAKEDIR:\SRC\OSDD\PSCRIPT\POST32=)
++ROOT            = $(MAKEDIR:\SRC\OSDD\PSCRIPT\psprint=)
+ !endif
+ !if "$(ROOT)" == "$(MAKEDIR)"
+ !error Problem setting "ROOT"! Make sure current working directory is either all\
+@@ -684,7 +688,10 @@
+ OEMRCc  = + $(OEMRCp)
+ !endif
+ 
+-###FILEVER21 = @^#$(_VENDOR):$(_VERSION21)^#@
++_VENDOR = ALT/IBM
++_VERSION21 = 30.905
++FILEVER21 = @^#$(_VENDOR):$(_VERSION21)^#@
++BUILDSIG21 = ^#^#1^#^# $(_BLDSTAMP)        $(HOSTNAME)::::::@@
+ 
+ #$(MRIOUT)\pscript.rc: $(MRIPATH)\postscr.rc $(AFMOUT)\psfont.rc \
+ #                      $(PPBPATH)\ppbs.rc
+@@ -748,7 +755,7 @@
+ ##  $(IPIN) afm . $(@) font1.pak
+ # save driver EAs in separate file, just in case
+   cd $(PS_SRC)
+-  pkgps2 $@ $(PRDESC)\pscript.lst $(PS_DEF_NAME)
++  pkgps2 $@ $(PRDESC)\$(PS_DRV_NAME).lst $(PS_DEF_NAME)
+   eautil $(OUTDIR)\$(PS_DRV_NAME).$(EXT) $(OUTDIR)\$(PS_DRV_NAME).ea /s /r /p
+ 
+ $(O_NLV)\$(PS_DRV_NAME).def: makefile
+@@ -756,7 +763,7 @@
+ #VAC
+   @echo Writing new  @<<$(O_NLV)\$(PS_DRV_NAME).def
+ LIBRARY $(PS_DEF_NAME)  INITINSTANCE  TERMINSTANCE
+-DESCRIPTION '$(FILEVER21) $(PS_DEF_NAME) PRINTER DEVICE DRIVER DYNA-LINK'
++DESCRIPTION '$(FILEVER21)$(BUILDSIG21) $(PS_DEF_NAME) PRINTER DEVICE DRIVER DYNA-LINK'
+ PROTMODE
+ DATA MULTIPLE READWRITE LOADONCALL
+ CODE LOADONCALL
+@@ -913,9 +920,9 @@
+ !   endif
+ !endif
+ 
+-$(OUTDIR)\readme: $(MRI_NL_EN)\readme $(PRDESC)\pscript.lst
++$(OUTDIR)\readme: $(MRI_NL_EN)\readme $(PRDESC)\$(PS_DRV_NAME).lst
+         copy $(MRI_NL_EN)\readme $(OUTDIR)
+-        copy $(PRDESC)\pscript.lst $(OUTDIR)
++        copy $(PRDESC)\$(PS_DRV_NAME).lst $(OUTDIR)
+ 
+ #***************************************************************************
+ # Include Footer.mak at this point.
+@@ -925,3 +932,17 @@
+ 
+ clean:
+         -echo y | del $(O_NLV)\*
++
++#clean_dbg:
++#!ifndef TARGET_PROD
++#TARGET_PROD = os2c
++#!endif
++#BLD_TYPE = debug
++#        del $(O_NLV)\$(NLV)\*.obj
++#        -echo y | del $(O_NLV)\$(NLV)\afm\*
++#        del $(O_NLV)\fntlib\*.obj
++#        del $(O_NLV)\fntlib\*.lib
++#        del $(O_NLV)\fntlib\*.lst
++#        -echo y | del $(O_NLV)\pin\en\ipin\*
++#        -echo y | del $(O_NLV)\pin\en\pin\*
++
